@@ -40,6 +40,47 @@ int public defaultInt; // 0
 address public defaultAddr; // 0x0000000000000000000000000000000000000000
 ```
 
+#### 4.Variables（变量）
+
+存在三种变量：
+
+- 状态变量：声明在方法之外的，它会存储到区块链中
+- 本地变量：声明在方法内的，它不会存储到区块链中
+- 全局变量：提供有关区块链的信息
+
+```solidity
+// 全局变量：提供有关区块链的信息
+uint timestamp = block.timestamp; // 当前区块时间戳
+```
+
+#### 5.Constants（常量）
+
+常数是无法修改的变量，它们的值是硬编码的，使用常量可以节省 gas 成本。
+
+常量的编码约定为大写字母。
+
+```solidity
+address public constant MY_ADDRESS = 0x777788889999AaAAbBbbCcccddDdeeeEfFFfCcCc;
+```
+
+#### 6.Immutable(不可变)
+
+不可变变量就像常量。和常量不同的是，不可变变量的值可以在构造函数中设置，但之后也是不能修改的。
+
+#### 7.Reading and Writing to a State Variable（状态变量读和写）
+
+要写入或更新状态变量，您需要发送交易。另一方面，您可以免费读取状态变量，无需任何交易费用。
+
+#### 8.Ether and Wei
+
+交易是用以太币支付的。wei是基本单位（1wei = 1），1 以太币等于 10^18 wei
+
+```solidity
+ // 1 wei: 1
+ uint public oneWei = 1 wei;
+ // 1 ether: 1000000000000000000
+ uint public oneEther = 1 ether;
+```
 
 ### remix集成github的project
 
