@@ -82,6 +82,26 @@ address public constant MY_ADDRESS = 0x777788889999AaAAbBbbCcccddDdeeeEfFFfCcCc;
  uint public oneEther = 1 ether;
 ```
 
+#### 9.Gas
+
+你需要为一笔交易支付多少以太币？
+
+需要 （支付的 gas 花费 * gas price 的以太币数量）：
+
+其中`gas`是计算单位，消耗的`gas`是交易中使用的`gas总量`，`gas价格`是您愿意为每种`gas`支付多少以太币。
+
+> note: 具有较高`gas价格`的交易具有更高的优先级被包含在一个块中，未用完的`gas`将被退还。
+
+##### Gas Limit
+
+您可以花费的汽油量有 2 个上限：
+
+- 气体限制（您愿意为交易使用的最大气体量，由您设置）
+
+- 区块气体限制（区块中允许的最大气体量，由网络设置）
+
+[Gas是什么?](https://www.youtube.com/watch?v=7Ygb02sfgXk)
+
 ### remix集成github的project
 
 1. 安装插件DGIT
