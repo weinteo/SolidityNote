@@ -102,6 +102,55 @@ address public constant MY_ADDRESS = 0x777788889999AaAAbBbbCcccddDdeeeEfFFfCcCc;
 
 [Gas是什么?](https://www.youtube.com/watch?v=7Ygb02sfgXk)
 
+### 10.If/Else
+
+`Solidity` 支持条件语句` if、else if` 和` else`，也支持 `if / else `语句的简写方式，通过”？”运算符（三元运算符）
+
+```solidity
+function ternary(uint _x) public pure returns (uint){
+    // if (_x < 10) {
+    //     return 1;
+    // }
+    // return 2;
+
+    // if / else 语句的简写方式，”？”运算符称为三元运算符
+    return _x < 10 ? 1 : 2;
+}
+```
+
+### 11.For and While Loop
+
+`Solidity` 支持` for`、`while` 和` do while `循环。不要编写无界循环，因为这可能会达到 `gas `限制，从而导致您的交易失败。所以很少使用 `while `和 `do while` 循环。
+
+### 12.Mapping（映射）
+
+映射是使用语法映射（`keyType` =>` valueType`）创建的。`keyType` 可以是任何内置值类型、字节、字符串或任何协定。`valueType` 可以是任何类型，包括另一个映射或数组。映射是不可迭代的。
+
+```solidity
+mapping(address => uint) public myMap;
+myMap[_addr]
+myMap[_addr] = _i
+```
+
+#### NestedMapping（嵌套映射）
+
+嵌套映射（从地址映射到另一个映射）
+
+```solidity
+mapping(address => mapping(uint => bool)) public nested;
+function get(address _addr1, uint _i) public view returns (bool){
+    return nested[_addr1][_i];
+}
+
+function set(address _addr1, uint _i, bool _boo) public{
+    nested[_addr1][_i] = _boo;
+}
+
+function remove(address _addr1, uint _i) public{
+    delete nested[_addr1][_i];
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
