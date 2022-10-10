@@ -151,6 +151,28 @@ function remove(address _addr1, uint _i) public{
 }
 ```
 
+### 13.Array
+
+数组可以具有编译时固定大小或动态大小。
+
+```solidity
+uint256[] public arr;
+uint256[] public arr2 = [1, 2, 3];
+// 固定大小的数组，所有元素初始化为 0
+uint256[10] public myFixedSizeArr;
+// 在内存中创建数组，只能创建固定大小
+uint[] memory a = new uint[](5);
+
+// 从数组中删除最后一个元素，会将数组长度减少 1
+function pop() public {
+    arr.pop();
+}
+// 删除不会更改数组长度。它将索引处的值重置为其默认值，这种情况下就是为0
+function remove(uint index) public{
+    delete arr[index];
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
