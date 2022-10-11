@@ -173,6 +173,37 @@ function remove(uint index) public{
 }
 ```
 
+### 14.Enum
+
+`Solidity` 支持可枚举，它们对于建模选择和跟踪状态很有用。默认值是列出的第一个元素
+
+```solidity
+enum Status {
+  Pending,
+  Shipped,
+  Accepted,
+  Rejected,
+  Canceled
+}
+```
+
+枚举可以在合约之外声明，如果在合约外部声明的话，需要在合约中导入枚举：
+
+```solidity
+import "./EnumDeclaration.sol";
+```
+
+### 15.Structs
+
+您可以通过创建结构来定义自己的类型，它们对于将相关数据分组在一起很有用，结构可以在合同之外声明并在另一个合同中导入。
+
+```solidity
+struct Todo {
+   string text;
+   bool completed;
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
