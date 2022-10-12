@@ -204,6 +204,28 @@ struct Todo {
 }
 ```
 
+### 16.Data Locations（数据存储位置）
+
+变量被声明为` storage`、`memory` 或` calldata` 以明确指定数据的位置。
+
+- storage：状态变量（存储在区块链上），类似全局变量的概念。
+- memory：内存变量中，只在函数内存在，类似局部变量。
+- calldata：和memory类似，但只能用在输入参数中，多函数参数传递使用，可以节约gas。
+
+```solidity
+function f() public {
+    MyStruct storage myStruct = myStructs[1];
+    myStruct.foo = 111;  // 全局修改
+
+    MyStruct memory myMemStruct = myStructs[0];
+    myMemStruct.foo = 123; // 局部修改，只在函数内生效
+}
+
+function h(uint256[] calldata _arr) external {
+    // do something with calldata array
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
