@@ -226,6 +226,44 @@ function h(uint256[] calldata _arr) external {
 }
 ```
 
+### 17.Function
+
+有几种方法可以从函数返回输出，公共函数不能接受某些数据类型作为输入或输出。
+
+- 可以返回多个值
+
+- 可以使用数组作为输入
+
+- 不能使用 map 作为输入或输出
+
+```solidity
+function named() public pure returns (
+            uint256 x,
+            bool b,
+            uint256 y
+        )
+    {
+        return (1, true, 2);
+    }
+```
+
+可以通过`key-value`的形式给参数赋值，这样可以忽略原有的参数顺序
+
+ ```solidity
+ function callFuncWithKeyValue() external pure returns (uint){
+     return someFuncWithManyInputs({a: address(0), b: true, c: "c", x: 1, y: 2, z: 3});
+ }
+ 
+ function someFuncWithManyInputs(
+       uint256 x,
+       uint256 y,
+       uint256 z,
+       address a,
+       bool b,
+       string memory c
+   ) public pure returns (uint256) {}
+ ```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
