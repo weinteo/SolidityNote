@@ -264,6 +264,27 @@ function named() public pure returns (
    ) public pure returns (uint256) {}
  ```
 
+### 18.View and Pure Functions
+
+`Getter` 函数可以声明为` view` 或` pure`：
+
+- pure：纯函数声明，不能够读也不能写状态变量，只能拥有局部变量，意味着不对链上数据做操作。
+- view：不能修改状态变量
+
+### 19.Error
+
+错误将撤消事务期间对状态所做的所有更改，并退回`gas`费用，您可以通过调用`require`、`revert` 或` assert` 来引发错误：
+
+- require：用于在执行之前验证输入和条件。
+- revert：是不能使用表达式的，需要用判断语法，它和`require`相反
+- assert：用于检查不应该为`false`的代码，断言失败可能意味着存在错误。
+
+自定义错误可以节约`gas`：
+
+```solidity
+error InsufficientBalance(uint balance, uint withdrawAmount);
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
