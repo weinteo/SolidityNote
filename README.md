@@ -285,6 +285,24 @@ function named() public pure returns (
 error InsufficientBalance(uint balance, uint withdrawAmount);
 ```
 
+### 20.Function Modifier（函数修改器）
+
+`modifier` 是可以在函数调用之前和/或之后运行的代码。其中`_;`表示运行函数的部分，然后执行完在回来继续执行后面的代码。
+
+好处：把一些验证代码抽出来复用
+
+```solidity
+modifier validAddress(address _addr) {
+    require(_addr != address(0), "Not valid address");  // 1
+    _;
+    // 3
+}
+ 
+ function changeOwner(address _newOwner) public onlyOwner validAddress(_newOwner) {
+    owner = _newOwner;  // 2
+ }
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
