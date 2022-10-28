@@ -303,6 +303,54 @@ modifier validAddress(address _addr) {
  }
 ```
 
+### 21.Event（事件）
+
+事件是记录当前事件智能合约运行状态的方法，但它不会存储到状态变量上。
+
+使用`emit`发射，事件会就汇报到交易记录到`logs`里，然后也会体现到区块链浏览器上。
+
+使用`indexed`标记过的索引变量，就可以在链外查询了（可以用一些工具查询索引变量报出的事件）。一个`event`最多只能有3个有索引的变量。
+
+```solidity
+event IndexLog(address indexed from, address indexed to, string message);
+function sendMessage(address _to, string calldata message) external {
+    emit IndexLog(msg.sender, _to, message);
+}
+```
+
+### 22.Constructor（构造函数）
+
+构造函数只会在合约部署的时候执行一次，用来初始化变量。
+
+```solidity
+contract Constructor{
+    address public owner;
+    string public name;
+    
+    constructor(string memory _name){
+        owner = msg.sender;
+        name = _name;
+    }
+}
+```
+
+有两种方法可以使用参数初始化父合约
+
+```solidity
+// 第一种方式
+contract ChildConstructorA is Constructor("A") {
+
+}
+
+// 第二种方式
+contract ChildConstructorB is Constructor {
+    string public nameB;
+    constructor(string memory _name) Constructor(_name){
+        nameB = _name;
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
