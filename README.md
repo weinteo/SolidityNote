@@ -351,6 +351,88 @@ contract ChildConstructorB is Constructor {
 }
 ```
 
+### 23.Inheritance（继承）
+
+使用 `is 关键字`继承其他合约。
+
+`virtual`关键字表示该函数可以被重写的。
+
+` override`关键字表示覆盖父函数的函数。
+
+```solidity
+
+
+contract B is A {
+    function foo() public pure virtual override returns (string memory){
+        return "B";
+    }
+}
+
+contract D is B, C {
+    function foo() public pure override(B, C) returns (string memory){
+        return super.foo();  // return C 因为C是函数foo()的最右边的父合约
+    }
+}
+
+
+```
+
+`Solidity `支持多重继承，但要按照规则顺序书写继承代码：从最基础的到派生的顺序来写
+
+```solidity
+// 继承必须从“最基类”到“最派生”排序。如果交换 A 和 B 的顺序会抛出编译错误。因为A是最基的类，所以必须放前面
+contract F is A, B{
+    function foo() public pure override(A, B) returns (string memory){
+        return super.foo(); // ç B
+    }
+}
+```
+
+### 24.Shadowing Inherited State Variables（隐藏继承状态变量）
+
+与函数不同，状态变量不能在子合约中重新声明来覆盖。正确覆盖继承的状态变量？
+
+```solidity
+contract A {
+    string public name = "Contract A";
+}
+
+contract B is A {
+    // name = "Contract B";   // error way
+    constructor(){
+        name = "Contract B";  // right way
+    }
+}
+```
+
+### 25.Calling Parent Contracts（调用父合约）
+
+可以直接调用父合约，也可以使用关键字`super`。通过使用关键字` super`，所有的直接父合约都会被调用。
+
+```solidity
+contract A {
+    event Log(string message);
+
+    function foo() public virtual {
+        emit Log("A foo");
+    }
+}
+
+contract B is A {
+    function foo() public virtual override {
+        emit Log("B foo");
+        super.foo();  // 调用父合约
+    }
+}
+
+contract C is A, B {
+    function foo() public virtual override(A, B) {
+        emit Log("C foo");
+        A.foo();   // 直接调合约
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
