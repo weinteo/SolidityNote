@@ -433,6 +433,43 @@ contract C is A, B {
 }
 ```
 
+### 26.Visibility（可见性）
+
+函数和状态变量必须声明它们是否可以被其他合约访问。函数可以声明为：
+
+- private：只能在合约内部访问，不能被外部合约访问，也不能被继承合约访问；
+- internal：内部变量、函数可以被继承和内部访问，不可以被外部访问；
+- public: 可见范围最大，任何合约都可以访问；
+- external：只能在合约外部访问，状态变量不可以为`external`范围；
+
+### 27.Interface（接口）
+
+如果不能直接调用其他合约的源代码，可以通过接口的方式与其他合约进行交互：
+
+- 不能有函数实现
+- 可以从其他接口继承
+- 所有声明的函数必须是外部的
+- 不能声明构造函数和状态变量
+
+```solidity
+interface ICounter{
+    function count() external view returns (uint);
+
+    function increment() external;
+}
+
+// 不知道合约的具体内容，只需要知道合约地址、函数的名称、参数等一些信息就可以调用
+contract MyContract {
+    function incrementCounter(address _counter) external {
+        ICounter(_counter).increment();
+    }
+
+    function getCount(address _counter) external view returns(uint){
+        return ICounter(_counter).count();
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
