@@ -470,6 +470,70 @@ contract MyContract {
 }
 ```
 
+### 28.Payable
+
+函数和地址可以被声明为Payable，表示可以在合约中接收以太币。
+
+```solidity
+address payable public owner;
+// Payable构造函数可以收到eth
+constructor() payable {
+    // msg.sender本身没有payable属性，所以需要加上
+    owner = payable(msg.sender);
+}
+// 该函数可将以太币存入该合约
+function deposit() public payable {}
+```
+
+### 29.Sending Ether（发送Ether）
+
+发送Ether有三种方式：
+
+- `transfer` ：消耗2300 gas， 如果失败就会抛出错误
+- `send` ：消耗2300 gas， 会返回结果（returns bool）
+- `call` ：消耗所有的gas，返回结果（bool）和数据（data）
+
+接收Ether的合约必须至少具有以下功能之一：
+
+- `receive() external payable`
+- `fallback() external payable`
+
+如果 `msg.data` 为空，则调用`receive()`，否则调用 `fallback()`
+
+如果 `msg.data` 为空，并且没有`receive()`，就会调用`fallback()`
+
+```solidity
+// 发送Eth的合约
+contract SendEther {
+    constructor() payable {}
+
+    function sendViaTransfer(address payable _to) public payable {
+        _to.transfer(msg.value);
+    }
+
+    function sendViaSend(address payable _to) public payable {
+        bool sent = _to.send(msg.value);
+        require(sent, "Failed to send Ether");
+    }
+
+    function sendViaCall(address payable _to) public payable {
+        (bool sent, ) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+
+// 接收Eth的合约
+contract ReceiveEther {
+    receive() external payable {}
+
+    fallback() external payable {}
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
