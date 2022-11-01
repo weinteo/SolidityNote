@@ -472,7 +472,7 @@ contract MyContract {
 
 ### 28.Payable
 
-函数和地址可以被声明为Payable，表示可以在合约中接收以太币。
+函数和地址可以被声明为`Payable`，表示可以在合约中接收以太币。
 
 ```solidity
 address payable public owner;
@@ -493,7 +493,7 @@ function deposit() public payable {}
 - `send` ：消耗2300 gas， 会返回结果（returns bool）
 - `call` ：消耗所有的gas，返回结果（bool）和数据（data）
 
-接收Ether的合约必须至少具有以下功能之一：
+接收`Ether`的合约必须至少具有以下功能之一：
 
 - `receive() external payable`
 - `fallback() external payable`
@@ -531,6 +531,61 @@ contract ReceiveEther {
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
+}
+```
+
+### 30.fallback（回退函数）
+
+`fallback`是一个不接受任何参数且不返回任何内容的函数。
+
+它在何时执行：
+
+- 调用不存在的函数
+- 以太币被直接发送到合约，但` receive()` 不存在或 `msg.data` 不为空；
+
+当通过 `transfer` 或 `send` 调用` fallback` 时，`gas` 限制为` 2300`
+
+```solidity
+contract Fallback {
+    event Log(string func, uint256 gas);
+    // fallback函数必须被声明为external
+    fallback() external payable {
+        // send/transfer（将 2300 gas 转发到这个函数）； call（转发所有的gas）
+        emit Log("fallback", gasleft());
+    }
+    // Receive 是当 msg.data 为空时触发的
+    receive() external payable {
+        emit Log("receive", gasleft());
+    }
+}
+
+contract SendToFallback {
+    function transferToFallback(address payable _to) public payable {
+        _to.transfer(msg.value);
+    }
+    function callFallback(address payable _to) public payable {
+        (bool sent, ) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+```
+
+### 31.Call
+
+`call` 是与其他合约交互的低级函数。
+
+只是通过调用回退函数`fallback`发送以太币时，这是推荐的方法。但是，这不是调用现有函数的推荐方法。
+
+假设合约调用者没有合约接收者的源代码，但我们确实知道合约接收者的地址和要调用的函数，可以使用abi编码的方式调用：
+
+```solidity
+// 测试合约接收者的函数foo
+function testCallFoo(address payable _addr) public payable {
+    // 发送以太币并指定gas
+    (bool success, bytes memory data) = _addr.call{
+        value: msg.value,
+        gas: 5000
+    }(abi.encodeWithSignature("foo(string, uint256", "call foo", 123));  // uint一定要写成uint256
 }
 ```
 
