@@ -589,6 +589,58 @@ function testCallFoo(address payable _addr) public payable {
 }
 ```
 
+### 32.Delegatecall（委托调用）
+
+`delegatecall` 是一个类似于 `call` 的低级函数。当合约A对合约B执行`delegatecall`时，执行B的代码
+使用合约 A 的存储，`msg.sender` 和` msg.value`。
+
+Note：
+
+- 只能使用被调用合约的逻辑来改变委托合约状态变量的值，而不能改变被调用合约的值。
+- 委托合约的变量布局必须和被调用合约完全一致。
+
+```solidity
+contract B {
+    uint256 public number;
+    address public sender;
+    uint256 public value;
+
+    function setVars(uint256 _num) external payable {
+        number = _num;
+        sender = msg.sender;
+        value = msg.value;
+    }
+}
+
+contract A {
+    // 布局必须和被调用合约B一致
+    uint256 public number;
+    address public sender;
+    uint256 public value;
+
+    function setVars(address _contract, uint256 _num) external payable {
+        (bool success, bytes memory data) = _contract.delegatecall(
+            abi.encodeWithSignature("setVars(uint256)", _num)
+        );
+        require(success, "delegatecall setVars is failed!");
+    }
+}
+```
+
+### 33.Function Selector（函数选择器）
+
+调用函数时，`calldata` 的前4个字节指定调用哪个函数，这 4 个字节称为函数选择器。
+
+函数选择器可以让你根据函数名称和每个输入参数的类型执行函数的动态调用。
+
+比如，使用`call` 在地址 `addr` 的合约上执行转账：
+
+```solidity
+addr.call(abi.encodeWithSignature("transfer(address,uint256)", 0xSomeAddress, 123))
+```
+
+从 `abi.encodeWithSignature(....) `返回的前 4 个字节是函数选择器。
+
 ### remix集成github的project
 
 1. 安装插件DGIT
