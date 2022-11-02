@@ -303,6 +303,292 @@ modifier validAddress(address _addr) {
  }
 ```
 
+### 21.Event（事件）
+
+事件是记录当前事件智能合约运行状态的方法，但它不会存储到状态变量上。
+
+使用`emit`发射，事件会就汇报到交易记录到`logs`里，然后也会体现到区块链浏览器上。
+
+使用`indexed`标记过的索引变量，就可以在链外查询了（可以用一些工具查询索引变量报出的事件）。一个`event`最多只能有3个有索引的变量。
+
+```solidity
+event IndexLog(address indexed from, address indexed to, string message);
+function sendMessage(address _to, string calldata message) external {
+    emit IndexLog(msg.sender, _to, message);
+}
+```
+
+### 22.Constructor（构造函数）
+
+构造函数只会在合约部署的时候执行一次，用来初始化变量。
+
+```solidity
+contract Constructor{
+    address public owner;
+    string public name;
+    
+    constructor(string memory _name){
+        owner = msg.sender;
+        name = _name;
+    }
+}
+```
+
+有两种方法可以使用参数初始化父合约
+
+```solidity
+// 第一种方式
+contract ChildConstructorA is Constructor("A") {
+
+}
+
+// 第二种方式
+contract ChildConstructorB is Constructor {
+    string public nameB;
+    constructor(string memory _name) Constructor(_name){
+        nameB = _name;
+    }
+}
+```
+
+### 23.Inheritance（继承）
+
+使用 `is 关键字`继承其他合约。
+
+`virtual`关键字表示该函数可以被重写的。
+
+` override`关键字表示覆盖父函数的函数。
+
+```solidity
+
+
+contract B is A {
+    function foo() public pure virtual override returns (string memory){
+        return "B";
+    }
+}
+
+contract D is B, C {
+    function foo() public pure override(B, C) returns (string memory){
+        return super.foo();  // return C 因为C是函数foo()的最右边的父合约
+    }
+}
+
+
+```
+
+`Solidity `支持多重继承，但要按照规则顺序书写继承代码：从最基础的到派生的顺序来写
+
+```solidity
+// 继承必须从“最基类”到“最派生”排序。如果交换 A 和 B 的顺序会抛出编译错误。因为A是最基的类，所以必须放前面
+contract F is A, B{
+    function foo() public pure override(A, B) returns (string memory){
+        return super.foo(); // ç B
+    }
+}
+```
+
+### 24.Shadowing Inherited State Variables（隐藏继承状态变量）
+
+与函数不同，状态变量不能在子合约中重新声明来覆盖。正确覆盖继承的状态变量？
+
+```solidity
+contract A {
+    string public name = "Contract A";
+}
+
+contract B is A {
+    // name = "Contract B";   // error way
+    constructor(){
+        name = "Contract B";  // right way
+    }
+}
+```
+
+### 25.Calling Parent Contracts（调用父合约）
+
+可以直接调用父合约，也可以使用关键字`super`。通过使用关键字` super`，所有的直接父合约都会被调用。
+
+```solidity
+contract A {
+    event Log(string message);
+
+    function foo() public virtual {
+        emit Log("A foo");
+    }
+}
+
+contract B is A {
+    function foo() public virtual override {
+        emit Log("B foo");
+        super.foo();  // 调用父合约
+    }
+}
+
+contract C is A, B {
+    function foo() public virtual override(A, B) {
+        emit Log("C foo");
+        A.foo();   // 直接调合约
+    }
+}
+```
+
+### 26.Visibility（可见性）
+
+函数和状态变量必须声明它们是否可以被其他合约访问。函数可以声明为：
+
+- private：只能在合约内部访问，不能被外部合约访问，也不能被继承合约访问；
+- internal：内部变量、函数可以被继承和内部访问，不可以被外部访问；
+- public: 可见范围最大，任何合约都可以访问；
+- external：只能在合约外部访问，状态变量不可以为`external`范围；
+
+### 27.Interface（接口）
+
+如果不能直接调用其他合约的源代码，可以通过接口的方式与其他合约进行交互：
+
+- 不能有函数实现
+- 可以从其他接口继承
+- 所有声明的函数必须是外部的
+- 不能声明构造函数和状态变量
+
+```solidity
+interface ICounter{
+    function count() external view returns (uint);
+
+    function increment() external;
+}
+
+// 不知道合约的具体内容，只需要知道合约地址、函数的名称、参数等一些信息就可以调用
+contract MyContract {
+    function incrementCounter(address _counter) external {
+        ICounter(_counter).increment();
+    }
+
+    function getCount(address _counter) external view returns(uint){
+        return ICounter(_counter).count();
+    }
+}
+```
+
+### 28.Payable
+
+函数和地址可以被声明为`Payable`，表示可以在合约中接收以太币。
+
+```solidity
+address payable public owner;
+// Payable构造函数可以收到eth
+constructor() payable {
+    // msg.sender本身没有payable属性，所以需要加上
+    owner = payable(msg.sender);
+}
+// 该函数可将以太币存入该合约
+function deposit() public payable {}
+```
+
+### 29.Sending Ether（发送Ether）
+
+发送Ether有三种方式：
+
+- `transfer` ：消耗2300 gas， 如果失败就会抛出错误
+- `send` ：消耗2300 gas， 会返回结果（returns bool）
+- `call` ：消耗所有的gas，返回结果（bool）和数据（data）
+
+接收`Ether`的合约必须至少具有以下功能之一：
+
+- `receive() external payable`
+- `fallback() external payable`
+
+如果 `msg.data` 为空，则调用`receive()`，否则调用 `fallback()`
+
+如果 `msg.data` 为空，并且没有`receive()`，就会调用`fallback()`
+
+```solidity
+// 发送Eth的合约
+contract SendEther {
+    constructor() payable {}
+
+    function sendViaTransfer(address payable _to) public payable {
+        _to.transfer(msg.value);
+    }
+
+    function sendViaSend(address payable _to) public payable {
+        bool sent = _to.send(msg.value);
+        require(sent, "Failed to send Ether");
+    }
+
+    function sendViaCall(address payable _to) public payable {
+        (bool sent, ) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+
+// 接收Eth的合约
+contract ReceiveEther {
+    receive() external payable {}
+
+    fallback() external payable {}
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+}
+```
+
+### 30.fallback（回退函数）
+
+`fallback`是一个不接受任何参数且不返回任何内容的函数。
+
+它在何时执行：
+
+- 调用不存在的函数
+- 以太币被直接发送到合约，但` receive()` 不存在或 `msg.data` 不为空；
+
+当通过 `transfer` 或 `send` 调用` fallback` 时，`gas` 限制为` 2300`
+
+```solidity
+contract Fallback {
+    event Log(string func, uint256 gas);
+    // fallback函数必须被声明为external
+    fallback() external payable {
+        // send/transfer（将 2300 gas 转发到这个函数）； call（转发所有的gas）
+        emit Log("fallback", gasleft());
+    }
+    // Receive 是当 msg.data 为空时触发的
+    receive() external payable {
+        emit Log("receive", gasleft());
+    }
+}
+
+contract SendToFallback {
+    function transferToFallback(address payable _to) public payable {
+        _to.transfer(msg.value);
+    }
+    function callFallback(address payable _to) public payable {
+        (bool sent, ) = _to.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
+    }
+}
+```
+
+### 31.Call
+
+`call` 是与其他合约交互的低级函数。
+
+只是通过调用回退函数`fallback`发送以太币时，这是推荐的方法。但是，这不是调用现有函数的推荐方法。
+
+假设合约调用者没有合约接收者的源代码，但我们确实知道合约接收者的地址和要调用的函数，可以使用abi编码的方式调用：
+
+```solidity
+// 测试合约接收者的函数foo
+function testCallFoo(address payable _addr) public payable {
+    // 发送以太币并指定gas
+    (bool success, bytes memory data) = _addr.call{
+        value: msg.value,
+        gas: 5000
+    }(abi.encodeWithSignature("foo(string, uint256", "call foo", 123));  // uint一定要写成uint256
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
