@@ -641,6 +641,81 @@ addr.call(abi.encodeWithSignature("transfer(address,uint256)", 0xSomeAddress, 12
 
 从 `abi.encodeWithSignature(....) `返回的前 4 个字节是函数选择器。
 
+### 34.Calling Other Contract（调用其他合约）
+
+合约可以通过 2 种方式调用其他合约。最简单的方法就是直接调用它，比如 A.foo(x, y, z)。
+
+调用其他合约的另一种方法是使用低级调用，但不推荐这种方法。
+
+```solidity
+contract Callee {
+    uint public x;
+    uint public value;
+    function setX(uint _x) public returns (uint) {
+        x = _x;
+        return x;
+    }
+}
+
+contract Caller {
+  function setX(Callee _callee,  uint _x) public {
+     uint x = _callee.setX(_x);
+}
+
+  function setXFromAddress(address _addr, uint _x) public {
+     Callee callee = Callee(_addr);
+     callee.setX(_x);
+  }
+}
+```
+
+### 35.Contract that Creates other Contracts（合约中创建合约）
+
+其他合约可以使用 new 关键字创建合约。从 0.8.0 开始，`new `关键字通过指定 `salt `选项来支持 `create2` 功能。
+
+```solidity
+function createAndSendEther(address _owner, string memory _model)
+    public payable {
+      Car car = new Car{value: msg.value}(_owner, _model);
+      cars.push(car);
+}
+
+function create2(
+    address _owner,
+    string memory _model,
+    bytes32 _salt
+) public payable {
+    Car car = new Car{value: msg.value, salt: _salt}(_owner, _model);
+    cars.push(car);
+}
+```
+
+### 36.Try Catch（异常捕捉）
+
+`try / catch `只能从外部函数调用和合约创建中捕获错误。
+
+```solidity
+// 捕捉调用函数异常
+function tryCatchExternalCall(uint256 _i) public {
+    try foo.myFunc(_i) returns (string memory result) {
+        emit Log(result);
+    } catch {
+        emit Log("external call failed");
+    }
+}
+
+// 捕捉创建新合约异常
+function tryCatchNewContract(address _owner) public {
+    try new Foo(_owner) returns (Foo foo) {
+        emit Log("Foo created!");
+    } catch Error(string memory reason) {
+        emit Log(reason);
+    } catch (bytes memory reason) {
+        emit LogBytes(reason);
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
