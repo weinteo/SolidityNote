@@ -716,6 +716,47 @@ function tryCatchNewContract(address _owner) public {
 }
 ```
 
+### 37.Import（导入）
+
+可以在 Solidity 中导入本地和外部文件。也可以通过简单地复制 url 从 GitHub 导入
+
+```solidity
+import "./ForImport.sol";
+
+import {Unauthorized, add as func, Point} from "./ForImport.sol";
+
+// 可以通过复制 url 从 GitHub 导入
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
+```
+
+### 38.Library（库）
+
+库类似于合约，但不能声明任何状态变量，并且也不能发送以太币。
+
+如果所有库函数都是内部的，则将库嵌入到合约中。否则，必须先部署库，然后在部署合约之前进行链接。
+
+```solidity
+library Array {
+    function remove (uint[] storage arr, uint index) public {
+        require(arr.length > 0, "Can't remove from empty array");
+        arr[index] = arr[arr.length - 1];
+        arr.pop();
+    }
+}
+
+contract TestArray {
+    // 使用<using 库 for 类型>的方法，该类型就可以使用库的所有函数功能
+    using Array for uint256[];
+    uint256[] public arr;
+    function testArrayRemove() public {
+        for (uint256 i = 0; i < 3; i++) {
+            arr.push(i); // 0,1,2
+        }
+        arr.remove(1); // 0,2
+    }
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
