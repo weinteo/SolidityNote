@@ -757,6 +757,72 @@ contract TestArray {
 }
 ```
 
+### 39.ABI Encode
+
+- `abi.encode(...) returns (bytes)`： [**ABI**](https://solidity-cn.readthedocs.io/zh/develop/abi-spec.html#abi) - 对给定参数进行编码
+- `abi.encodePacked(...) returns (bytes)`：对给定参数执行 [紧打包编码](https://solidity-cn.readthedocs.io/zh/develop/abi-spec.html#abi-packed-mode)
+- `abi.encodeWithSelector(bytes4 selector, ...) returns (bytes)`： 对给定参数进行编码，并以给定的函数选择器作为起始的 4 字节数据一起返回
+- `abi.encodeWithSignature(string signature, ...) returns (bytes)`：等价于 `abi.encodeWithSelector(bytes4(keccak256(signature), ...)`
+
+```solidity
+abi.encodeWithSignature("transfer(address, uint256)", to, amount);
+abi.encodeWithSelector(IERC20.transfer.selector, to, amount);
+abi.encodeCall(IERC20.transfer, (to, amount));
+```
+
+### 40.ABI Decode
+
+`abi.encode` 将数据编码为字节，`abi.decode` 将字节解码回数据。
+
+```solidity
+contract AbiDecode {
+    struct MyStruct {
+        string name;
+        uint256[2] nums;
+    }
+
+    function encode(
+        uint256 x,
+        address addr,
+        uint256[] calldata arr,
+        MyStruct calldata myStruct
+    ) external pure returns(bytes memory){
+        return abi.encode(x, addr, arr, myStruct);
+    }
+
+    function decode(bytes calldata data)
+        external
+        pure
+        returns (
+            uint256 x,
+            address addr,
+            uint256[] memory arr,
+            MyStruct memory myStruct
+        )
+    {
+        (x, addr, arr, myStruct) = abi.decode(data, (uint, address, uint[], MyStruct));
+    }
+}
+```
+
+### 41.Hashing with Keccak256（用 Keccak256 散列）
+
+keccak256 计算输入的 Keccak-256 哈希。一些用例是：
+
+- 从输入创建确定性唯一 ID
+- 提交-显示方案
+- 紧凑的加密签名（通过签名散列而不是更大的输入）
+
+```solidity
+function hash(
+    string memory _text,
+    uint256 _num,
+    address _addr
+) public pure returns (bytes32) {
+    return keccak256(abi.encodePacked(_text, _num, _addr));
+}
+```
+
 ### remix集成github的project
 
 1. 安装插件DGIT
@@ -769,3 +835,5 @@ contract TestArray {
 ### 学习资源
 
 [区块链技术-智能合约Solidity编程语言](https://solidity.tryblockchain.org/index.html)
+
+[Solidity develop docs](https://solidity-cn.readthedocs.io/zh/develop/index.html)
