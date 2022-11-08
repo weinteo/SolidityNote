@@ -823,6 +823,20 @@ function hash(
 }
 ```
 
+使用`encodePacked`会出现`hash`碰撞，比如两个字符串打包的场景：
+
+```solidity
+encodePacked(AA, ABBB) -> AAABBB
+encodePacked(AAA, BBB) -> AAABBB
+```
+
+`(AA, ABBB)` 和`(AAA, BBB)` 的结果是一样的，针对这种情况的解决方案有两种：
+
+- 使用`encode`函数代替`encodePacked`进行编码，`encode`会在结果后面补0
+- 两个相邻的字符串之间添加`uint`类型一起打包
+
+> note: 不理解的话可以参考此视频：[47 哈希运算](https://www.youtube.com/watch?v=dIeTI4ux4fw&list=PLV16oVzL15MS-Zw8a3eEOADwbHhm8GrMp&index=47)
+
 ### remix集成github的project
 
 1. 安装插件DGIT
