@@ -835,7 +835,31 @@ encodePacked(AAA, BBB) -> AAABBB
 - 使用`encode`函数代替`encodePacked`进行编码，`encode`会在结果后面补0
 - 两个相邻的字符串之间添加`uint`类型一起打包
 
-> note: 不理解的话可以参考此视频：[47 哈希运算](https://www.youtube.com/watch?v=dIeTI4ux4fw&list=PLV16oVzL15MS-Zw8a3eEOADwbHhm8GrMp&index=47)
+[视频参考：47 哈希运算](https://www.youtube.com/watch?v=dIeTI4ux4fw&list=PLV16oVzL15MS-Zw8a3eEOADwbHhm8GrMp&index=47)
+
+### 42 验证签名
+
+消息可以在链下签名，然后使用智能合约在链上进行验证。
+
+步骤分两步：
+
+#### 1.签名
+
+- 创建要签名的message
+
+- 对message进行hash
+
+- 对上一步得到的hash进行签名
+
+#### 2.验证
+
+- 从原始message重新创建哈希
+
+- 从签名和哈希中恢复签名者
+
+- 将恢复的签名者与声明的签名者进行比较
+
+[代码实例](https://github.com/weinteo/SolidityNote/blob/main/basic_example/VerifyingSignature.sol) | [文章参考](https://mirror.xyz/yunmo.eth/q8UqZlpH7y0VFfH0-BKHI55d8EkZ4PqGdjMAjBGzS9M) | [视频参考](https://www.youtube.com/watch?v=QDuMlTeE6cg&list=PLV16oVzL15MS-Zw8a3eEOADwbHhm8GrMp&index=48)
 
 ### remix集成github的project
 
