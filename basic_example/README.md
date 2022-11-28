@@ -1,8 +1,4 @@
-## SolidityNote
-
-learn solidity note
-
-### solidity基本语法学习
+### solidity基本语法
 
 根据`example`来学习；from：https://solidity-by-example.org/hello-world/
 
